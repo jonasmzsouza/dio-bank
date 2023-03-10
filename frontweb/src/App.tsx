@@ -1,16 +1,23 @@
-import { ChakraProvider, Flex } from "@chakra-ui/react";
-import { Card } from "./components/Card";
+import { ChakraProvider } from "@chakra-ui/react";
+import { BrowserRouter } from "react-router-dom";
+import { AppContextProvider } from "./components/AppContext";
 import { Layout } from "./components/Layout";
+import MainRoutes from "./Routes";
+import { createLocalStorage, getAllLocalStorage } from "./services/storage";
 
 function App() {
+  !getAllLocalStorage() && createLocalStorage();
+
   return (
-    <ChakraProvider>
-      <Layout>
-        <Flex justifyContent="center" alignItems="center" h="calc(100vh - 140px)" bg="#0ffff8" padding="25px">
-          <Card />
-        </Flex>
-      </Layout>
-    </ChakraProvider>
+    <BrowserRouter>
+      <AppContextProvider>
+        <ChakraProvider>
+          <Layout>
+            <MainRoutes />
+          </Layout>
+        </ChakraProvider>
+      </AppContextProvider>
+    </BrowserRouter>
   );
 }
 
