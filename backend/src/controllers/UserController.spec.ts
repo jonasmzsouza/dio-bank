@@ -1,76 +1,98 @@
 import { UserController } from "./UserController";
-import { UserService } from "../services/UserService";
 import { Request } from "express";
 import { makeMockResponse } from "../__mocks__/mockResponse.mock";
 
-describe("UserController", () => {
-  const mockUserService: Partial<UserService> = {
-    createUser: jest.fn(),
-    getAllUsers: jest.fn(),
-    deleteUser: jest.fn(),
-  };
-  const userController = new UserController(mockUserService as UserService);
+const mockUserService = {
+  createUser: jest.fn(),
+};
 
-  it("deve adicionar um novo usuário", () => {
+jest.mock("../services/UserService", () => {
+  return {
+    UserService: jest.fn().mockImplementationOnce(() => {
+      return mockUserService;
+    }),
+  };
+});
+
+describe("UserController", () => {
+  const userController = new UserController();
+
+  it("should add a new user", () => {
     const mockRequest = {
       body: {
         name: "Jonas",
         email: "jonas@email.com",
+        password: "123456",
       },
     } as Request;
-    const mockReponse = makeMockResponse();
-    userController.createUser(mockRequest, mockReponse);
-    expect(mockReponse.state.status).toBe(201);
-    expect(mockReponse.state.json).toMatchObject({ message: "User was created" });
-  });
-
-  it("deve retornar uma resposta de erro caso o usuario não informe o nome", () => {
-    const mockRequest = {
-      body: {
-        name: "",
-        email: "jonas@email.com",
-      },
-    } as Request;
-    const mockReponse = makeMockResponse();
-    userController.createUser(mockRequest, mockReponse);
-    expect(mockReponse.state.status).toBe(400);
-    expect(mockReponse.state.json).toMatchObject({
-      message: "Bad request: required name",
+    const mockResponse = makeMockResponse();
+    userController.createUser(mockRequest, mockResponse);
+    expect(mockResponse.state.status).toBe(201);
+    expect(mockResponse.state.json).toMatchObject({
+      message: "User was created",
     });
   });
 
-  it("deve retornar uma resposta de erro caso o usuario não informe o email", () => {
+  it("should return an error response if the user does not provide the name ", () => {
     const mockRequest = {
       body: {
         name: "Jonas",
         email: "",
+        password: "123456",
       },
     } as Request;
-    const mockReponse = makeMockResponse();
-    userController.createUser(mockRequest, mockReponse);
-    expect(mockReponse.state.status).toBe(400);
-    expect(mockReponse.state.json).toMatchObject({
-      message: "Bad request: required email",
+    const mockResponse = makeMockResponse();
+    userController.createUser(mockRequest, mockResponse);
+    expect(mockResponse.state.status).toBe(400);
+    expect(mockResponse.state.json).toMatchObject({
+      message: "Bad request: all fields are mandatory",
     });
   });
 
-  it("deve verificar se função getAllUsers está sendo chamada", () => {
-    const mockRequest = {} as Request;
-    const mockReponse = makeMockResponse();
-    userController.getAllUsers(mockRequest, mockReponse);
-    expect(mockReponse.state.status).toBe(200);
+  it("should return an error response if the user does not provide the email address", () => {
+    const mockRequest = {
+      body: {
+        name: "",
+        email: "jonas@email.com",
+        password: "123456",
+      },
+    } as Request;
+    const mockResponse = makeMockResponse();
+    userController.createUser(mockRequest, mockResponse);
+    expect(mockResponse.state.status).toBe(400);
+    expect(mockResponse.state.json).toMatchObject({
+      message: "Bad request: all fields are mandatory",
+    });
   });
 
-  it("deve deletar um usuário", () => {
+  it("should return an error response if the user does not provide the password", () => {
+    const mockRequest = {
+      body: {
+        name: "Jonas",
+        email: "jonas@email.com",
+        password: "",
+      },
+    } as Request;
+    const mockResponse = makeMockResponse();
+    userController.createUser(mockRequest, mockResponse);
+    expect(mockResponse.state.status).toBe(400);
+    expect(mockResponse.state.json).toMatchObject({
+      message: "Bad request: all fields are mandatory",
+    });
+  });
+
+  it("should delete a user", () => {
     const mockRequest = {
       body: {
         name: "Jonas",
         email: "jonas@email.com",
       },
     } as Request;
-    const mockReponse = makeMockResponse();
-    userController.deleteUser(mockRequest, mockReponse);
-    expect(mockReponse.state.status).toBe(200);
-    expect(mockReponse.state.json).toMatchObject({ message: "User has been deleted" });
+    const mockResponse = makeMockResponse();
+    userController.deleteUser(mockRequest, mockResponse);
+    expect(mockResponse.state.status).toBe(200);
+    expect(mockResponse.state.json).toMatchObject({
+      message: "User has been deleted",
+    });
   });
 });

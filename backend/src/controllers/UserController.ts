@@ -11,31 +11,29 @@ export class UserController {
   createUser = (request: Request, response: Response) => {
     const user = request.body;
 
-    if (!user.name) {
+    if (!user.name || !user.email || !user.password) {
       return response
         .status(400)
-        .json({ message: "Bad request: required name" });
+        .json({ message: "Bad request: all fields are mandatory" });
     }
 
-    if (!user.email) {
-      return response
-        .status(400)
-        .json({ message: "Bad request: required email" });
-    }
-
-    this.userService.createUser(user.name, user.email);
+    this.userService.createUser(user.name, user.email, user.password);
     return response.status(201).json({ message: "User was created" });
   };
 
   deleteUser = (request: Request, response: Response) => {
-    const user = request.body;
+    // const user = request.body;
 
-    if (!user.name) {
-      return response.status(400).json({ message: "Bad request: required id" });
-    }
+    // if (!user.id_user) {
+    //   return response.status(400).json({ message: "Bad request: all fields are mandatory" });
+    // }
 
-    this.userService.deleteUser(user.name, user.email);
+    // this.userService.deleteUser(user.name, user.email);
     return response.status(200).json({ message: "User has been deleted" });
+  };
+
+  getUser = (request: Request, response: Response) => {
+    return response.status(200);
   };
 
   getAllUsers = (request: Request, response: Response) => {
