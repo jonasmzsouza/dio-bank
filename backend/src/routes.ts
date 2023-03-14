@@ -1,11 +1,15 @@
 import { Router } from "express";
+import { LoginController } from "./controllers/LoginController";
 import { UserController } from "./controllers/UserController";
+import { verifyAuth } from "./midlleware/verifyAuth";
 
 export const router = Router();
 
+const loginController = new LoginController();
 const userController = new UserController();
 
-router.get("/users/:id", userController.getUser);
 router.post("/users", userController.createUser);
-router.get("/users", userController.getAllUsers);
-router.delete("/users/:id", userController.deleteUser);
+router.get("/users/:userId", verifyAuth, userController.getUser);
+router.delete("/users", userController.deleteUser);
+
+router.post("/login", loginController.login);

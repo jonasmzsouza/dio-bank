@@ -22,22 +22,16 @@ export class UserController {
   };
 
   deleteUser = (request: Request, response: Response) => {
-    // const user = request.body;
-
-    // if (!user.id_user) {
-    //   return response.status(400).json({ message: "Bad request: all fields are mandatory" });
-    // }
-
-    // this.userService.deleteUser(user.name, user.email);
     return response.status(200).json({ message: "User has been deleted" });
   };
 
-  getUser = (request: Request, response: Response) => {
-    return response.status(200);
-  };
-
-  getAllUsers = (request: Request, response: Response) => {
-    const users = this.userService.getAllUsers();
-    return response.status(200).json(users);
+  getUser = async (request: Request, response: Response) => {
+    const { userId } = request.params;
+    const user = await this.userService.getUser(userId);
+    return response.status(200).json({
+      userId: user?.id_user,
+      name: user?.name,
+      email: user?.email,
+    });
   };
 }
